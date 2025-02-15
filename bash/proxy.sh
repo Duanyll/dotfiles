@@ -1,11 +1,16 @@
 # Usage: set_proxy_env http://proxy.example.com:8080
 set_proxy_env() {
-    export http_proxy=$1
-    export https_proxy=$1
-    export all_proxy=$1
-    export HTTP_PROXY=$1
-    export HTTPS_PROXY=$1
-    export ALL_PROXY=$1
+    local proxy=$1
+    # If the proxy is a number, assume it is a port number on localhost
+    if [[ $proxy =~ ^[0-9]+$ ]]; then
+        proxy="http://localhost:$proxy"
+    fi
+    export http_proxy=$proxy
+    export https_proxy=$proxy
+    export all_proxy=$proxy
+    export HTTP_PROXY=$proxy
+    export HTTPS_PROXY=$proxy
+    export ALL_PROXY=$proxy
 }
 
 # Usage: unset_proxy_env
@@ -21,15 +26,13 @@ unset_proxy_env() {
 # Usage: set_docker_proxy http://proxy.example.com:8080
 # This will configure the Docker client to use an external proxy server
 set_docker_proxy() {
-    run_python set_docker_proxy.py $1
-}
-
-# Usage: set_docker_proxy_on_host 7890
-# This will detect the host IP address and configure the Docker client to use a HTTP proxy server on docker host at given port
-set_docker_proxy_on_host() {
-    local nic_name=$(ip route get 1 | awk '{print $5; exit}')
-    local host_ip=$(ip -4 addr show $nic_name | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
-    run_python set_docker_proxy.py http://$host_ip:$1
+    local proxy=$1
+    if [[ $proxy =~ ^[0-9]+$ ]]; then
+        local nic_name=$(ip route get 1 | awk '{print $5; exit}')
+        local host_ip=$(ip -4 addr show $nic_name | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+        proxy="http://$host_ip:$proxy"
+    fi
+    run_python set_docker_proxy.py $proxy
 }
 
 # Usage: unset_docker_proxy
