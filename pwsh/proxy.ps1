@@ -16,6 +16,8 @@ function Set-ProxyEnvironments {
     $env:http_proxy = $proxy
     $env:https_proxy = $proxy
     $env:all_proxy = $proxy
+
+    Write-Host "Proxy environments set to $proxy"
 }
 
 function Remove-ProxyEnvironments {
@@ -25,4 +27,6 @@ function Remove-ProxyEnvironments {
     $env:http_proxy = $null
     $env:https_proxy = $null
     $env:all_proxy = $null
+
+    Write-Host "Proxy environments removed"
 }

@@ -3,7 +3,11 @@ $script_dir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 # Check $profile already has the installation (marked by # BEGIN: duanyll-dotfiles)
 $profile_path = $PROFILE
-$profile_content = Get-Content $profile_path
+if (Test-Path $profile_path) {
+    $profile_content = Get-Content $profile_path
+} else {
+    $profile_content = ""
+}
 $profile_content | Select-String -Pattern "# BEGIN: duanyll-dotfiles" | ForEach-Object {
     Write-Host "Already installed. Exiting..."
     return
@@ -12,7 +16,7 @@ $profile_content | Select-String -Pattern "# BEGIN: duanyll-dotfiles" | ForEach-
 # Add the installation to $profile
 $profile_content += @"
 # BEGIN: duanyll-dotfiles
-. "$script_dir/proxy.ps1"
+. "$script_dir/pwsh/index.ps1"
 # END: duanyll-dotfiles
 "@
 
