@@ -10,7 +10,7 @@ function Create-SyncedFile {
     # Make source absolute
     $source = (Get-Item $source).FullName
     if (Test-Path $destination) {
-        $overwrite = Read-Host "Overwrite $destination? (y/n)"
+        $overwrite = Read-Host "Overwrite $destination ? (y/n)"
         if ($overwrite -ne "y") {
             return
         }
@@ -20,6 +20,6 @@ function Create-SyncedFile {
 }
 
 function Install-SyncedConfigFiles {
-    New-Item -ItemType Directory -Path $USERPROFILE/.config -Force | Out-Null
-    Create-SyncedFile "$config_dir/starship.toml" "$USERPROFILE/.config/starship.toml"
+    New-Item -ItemType Directory -Path $env:USERPROFILE/.config -Force | Out-Null
+    Create-SyncedFile "$config_dir/starship.toml" "$env:USERPROFILE/.config/starship.toml"
 }
