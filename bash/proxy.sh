@@ -23,6 +23,19 @@ unset_proxy_env() {
     unset ALL_PROXY
 }
 
+update_docker_proxy() {
+    local proxy=$1
+    local config_path="$HOME/.docker/config.json"
+    if [[ ! -f $config_path ]]; then
+        echo '{}' > "$config_path"
+    fi
+    if [[ -z $proxy ]]; then
+        jq 'del(.proxies.default.httpProxy, .proxies.default.httpsProxy, .proxies.default.allProxy)' "$config_path" > "$config_path.tmp" && mv "$config_path.tmp" "$config_path"
+    else
+        jq --arg proxy "$proxy" '.proxies.default.httpProxy = $proxy | .proxies.default.httpsProxy = $proxy | .proxies.default.allProxy = $proxy' "$config_path" > "$config_path.tmp" && mv "$config_path.tmp" "$config_path"
+    fi
+}
+
 # Usage: set_docker_proxy http://proxy.example.com:8080
 # This will configure the Docker client to use an external proxy server
 set_docker_proxy() {
@@ -32,11 +45,11 @@ set_docker_proxy() {
         local host_ip=$(ip -4 addr show $nic_name | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
         proxy="http://$host_ip:$proxy"
     fi
-    run_python set_docker_proxy.py $proxy
+    update_docker_proxy "$proxy"
 }
 
 # Usage: unset_docker_proxy
 # Remove the proxy configuration from the Docker client
 unset_docker_proxy() {
-    run_python set_docker_proxy.py
+    update_docker_proxy
 }
