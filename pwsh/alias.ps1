@@ -187,3 +187,24 @@ function Update-AliasConfiguration {
 
 # 启动时自动运行
 Remove-ConflictingAliases -Silent | Out-Null
+
+function Invoke-LsWithColors {
+    & ls.exe --color=auto @args
+}
+
+$script:hasDirColors = Get-Command dircolors -ErrorAction SilentlyContinue
+if ($script:hasDirColors) {
+    # Set LS_COLORS environment variable
+    $script:dirColorsOutput = & dircolors -b
+    # Match the single quote pattern in the output
+    $script:pattern = "'([^']+)'"
+    if ($script:dirColorsOutput[0] -match $script:pattern) {
+        $env:LS_COLORS = $matches[1]
+        # Check if `ls` is an application instead of an alias
+        $script:lsCommand = Get-Command ls -ErrorAction SilentlyContinue
+        if ($script:lsCommand -and $script:lsCommand.CommandType -eq 'Application') {
+            # Set the alias for ls to use --color=auto
+            Set-Alias ls Invoke-LsWithColors -Force
+        }
+    }
+}
