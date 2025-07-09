@@ -19,4 +19,6 @@ link_synced_files() {
     mkdir -p ~/.config
     # ~/.config/starship.toml -> ../config/starship.toml
     try_make_link $CONFIG_DIR/starship.toml ~/.config/starship.toml
+    # ~/.tmux.conf -> ../config/.tmux.conf
+    try_make_link $CONFIG_DIR/.tmux.conf ~/.tmux.conf
 }

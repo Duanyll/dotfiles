@@ -32,6 +32,9 @@ install_all_tools() {
     install_tool starship https://cdn.duanyll.com/third-party/starship/starship-1.22.1-linux-musl-amd64
     install_tool aria2c https://cdn.duanyll.com/third-party/aria2c/aria2c-1.36.0-linux-amd64
 
+    # Install uv
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+
     # Try to install starship completions
     if ! grep -q "starship" ~/.bashrc; then
         echo 'eval "$(starship init bash)"' >> ~/.bashrc
